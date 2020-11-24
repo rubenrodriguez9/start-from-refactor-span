@@ -2,7 +2,7 @@ import './App.css';
 import {v4 as uuidv4} from "uuid"
 
 import React, { Component } from 'react'
-import TodoView from './components/TodoView';
+import TodoView from './components/Todo/TodoView';
 
 
 export default class App extends Component {
@@ -72,18 +72,30 @@ export default class App extends Component {
   }
 
   appHandleEditTodo =  async (targetID) => {
-
+    let value ;
     let arr = [...this.state.todoList].map((item) => {
     
       if(targetID === item.id){
         item.editToggle = true
+        value = item.todo
       }
       return item
+
     })
+
+    
+
+    console.log(arr)
+
+  
+
+
     
     this.setState({
       todoList: arr,
-      disableTrigger: true
+      disableTrigger: true,
+      editTodoValue: value
+      
     
     })
     

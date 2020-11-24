@@ -1,5 +1,5 @@
 import React from 'react'
-
+import Span from "../shared/span/Span"
 import "./TodoView.css"
 
 const TodoView = ({todoList, handleDeleteOnClick, appHandleEditTodo, appHandleEditOnChange, editTodoValue, appHandleEditSubmit, disableTrigger}) => {
@@ -9,6 +9,7 @@ const TodoView = ({todoList, handleDeleteOnClick, appHandleEditTodo, appHandleEd
     }
 
     const handleEdit = (id) => {
+        
         appHandleEditTodo(id)
         
     }
@@ -33,41 +34,53 @@ const TodoView = ({todoList, handleDeleteOnClick, appHandleEditTodo, appHandleEd
              //shows input if edit toggle is tru
          <input
          type="text"
-         onChange={(event) => handleEditOnChange(event)}
+         onChange={handleEditOnChange}
          name="editTodoValue"
          value={editTodoValue}
          />
          ) :(
              //shows todo if edit toggle is false
-            <span>{todo}</span>
+            <Span
+            value={todo}
+            
+            />
          )
             }
 
 
                          {/* edit and update toggle */}
             {editToggle ? 
-            (<span
-                className="edit-button todo-button-shared" 
-                onClick={() => handleSubmit(id)}
-              
-            >Update</span>
+
+               ( <Span
+                className={"edit-button todo-button-shared"}
+                onClick={handleSubmit}
+                value={'Update'}
+                id={id}
+                
+                
+                />
             ):(
-              <span
-              onClick={() => handleEdit(id)}
-                className={disableTrigger ? 'disabled' :"edit-button todo-button-shared"}
-              
-              >Edit</span>  
+                <Span
+                value={"Edit"}
+                className={"edit-button todo-button-shared"}
+                onClick={handleEdit}
+                disabledClass={'disabled'}
+                id={id}
+                disableTrigger={disableTrigger}
+
+                />
             )}
             
 
            
-
-            
-            <span 
-            onClick={ () => deleteTodo(id)}
-            className={disableTrigger ? "disabled" : "delete-button todo-button-shared"}
-
-            >Delete</span>
+            <Span
+                value={"Delete"}
+                id={id}
+                onClick={deleteTodo}
+                disabledClass={"disabled"}
+                className={"delete-button todo-button-shared"}
+                disableTrigger={disableTrigger}
+            />    
             <br/>
             </li>
             )

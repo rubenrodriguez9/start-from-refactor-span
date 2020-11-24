@@ -1,25 +1,152 @@
-import logo from './logo.svg';
 import './App.css';
+import {v4 as uuidv4} from "uuid"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React, { Component } from 'react'
+import TodoView from './components/TodoView';
+
+
+export default class App extends Component {
+
+  state={
+    todoList: [
+      {
+       id: uuidv4(),
+       todo: "Wash clothes",
+       editToggle: false
+      },
+      {
+        id: uuidv4(),
+        todo: "Go food shopping",
+        editToggle: false
+       },
+       {
+        id: uuidv4(),
+        todo: "Study Javascript",
+        editToggle: false
+       }
+    ],
+    todoValue: "",
+    showNoTodoMessage: false,
+    disableTrigger: false,
+    editTodoValue: ''
+  }
+
+  handleSubmitOnClick = () =>{
+
+  
+    let arr = [...this.state.todoList, {id:uuidv4(), todo: this.state.todoValue}]
+
+    this.setState({
+      todoList: arr,
+      todoValue: "",
+      showNoTodoMessage: false
+    })
+  }
+
+  handleInputOnChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+
+  }
+
+  handleDeleteOnClick =  async (targetID) => {
+    
+
+    let arr = [...this.state.todoList].filter((item) => {
+            return item.id !== targetID
+    })
+
+   await this.setState({
+      todoList: arr
+    })
+
+    
+   if(this.state.todoList.length === 0) {
+      this.setState({
+        showNoTodoMessage: true
+      })
+      
+    }
+   
+  }
+
+  appHandleEditTodo =  async (targetID) => {
+
+    let arr = [...this.state.todoList].map((item) => {
+    
+      if(targetID === item.id){
+        item.editToggle = true
+      }
+      return item
+    })
+    
+    this.setState({
+      todoList: arr,
+      disableTrigger: true
+    
+    })
+    
+  }
+
+  appHandleEditOnChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value
+    })
+
+    
+    console.log(this.state.editTodoValue);
+  }
+
+  appHandleEditSubmit = (targetID) => {
+
+    let arr = [...this.state.todoList].map((item) => {
+      if(targetID === item.id){
+        item.todo = this.state.editTodoValue
+        item.editToggle= false
+      }
+      return item
+    }) 
+
+   
+    this.setState({
+      todoList: arr,
+      editTodoValue: "",
+      disableTrigger: false
+      
+    })
+  }
+
+  render() {
+
+    const {todoList, showNoTodoMessage, disableTrigger, editTodoValue} = this.state
+
+    return (
+      <div style={{textAlign: "center"}} >
+
+        {showNoTodoMessage? <div>No todos left</div> : null}
+        <input 
+          onChange={this.handleInputOnChange}
+          name="todoValue"
+          type="text" 
+          value={this.state.todoValue} />
+
+        <button onClick={this.handleSubmitOnClick}  >Submit</button>
+
+        <TodoView
+          todoList={todoList}
+          handleDeleteOnClick={this.handleDeleteOnClick}
+          appHandleEditTodo={this.appHandleEditTodo}
+          disableTrigger={disableTrigger}
+          appHandleEditOnChange={this.appHandleEditOnChange}
+          editTodoValue={editTodoValue}
+          appHandleEditSubmit={this.appHandleEditSubmit}
+
+        
+        />
+        
+        
+      </div>
+    )
+  }
 }
-
-export default App;

@@ -1,0 +1,24 @@
+.edit-button{
+    color: white;
+    background-color: blue;
+}
+
+.delete-button{
+    background-color: red;
+    color: white;
+}
+
+.todo-button-shared{
+    margin: 10px;
+    padding: 3px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.disabled{
+    pointer-events: none;
+    background-color: gray;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 3px;
+}

@@ -1,164 +1,126 @@
-import './App.css';
-import {v4 as uuidv4} from "uuid"
-
 import React, { Component } from 'react'
-import TodoView from './components/Todo/TodoView';
+import Todo from "./components/Todo/Todo"
+import {v4 as uuidv4} from "uuid"
+import validator from 'validator'
 
+export class App extends Component {
 
-export default class App extends Component {
-
-  state={
-    todoList: [
-      {
-       id: uuidv4(),
-       todo: "Wash clothes",
-       editToggle: false
-      },
-      {
-        id: uuidv4(),
-        todo: "Go food shopping",
-        editToggle: false
-       },
-       {
-        id: uuidv4(),
-        todo: "Study Javascript",
-        editToggle: false
-       }
-    ],
-    todoValue: "",
-    showNoTodoMessage: false,
-    disableTrigger: false,
-    editTodoValue: ''
+  state = {
+    isAuth: false,
+    email:"",
+    password:"",
+    errorMessage: false,
+    passwordError: false,
+    passwordErrorMessage: "Password must contain numbers, characters, capital and all that jazz",
+    submitErrorMessage: '',
+    submitError: false
   }
 
-  handleSubmitOnClick = () =>{
-
-  
-    let arr = [...this.state.todoList, {id:uuidv4(), todo: this.state.todoValue}]
-
-    this.setState({
-      todoList: arr,
-      todoValue: "",
-      showNoTodoMessage: false
-    })
-  }
-
-  handleInputOnChange = (event) => {
+  handleOnChangeEmail = (event) => {
+    
     this.setState({
       [event.target.name]: event.target.value
     })
-
   }
 
-  handleDeleteOnClick =  async (targetID) => {
-    
 
-    let arr = [...this.state.todoList].filter((item) => {
-            return item.id !== targetID
-    })
-
-   await this.setState({
-      todoList: arr
-    })
+  handleOnChangePassword = async (event) => {
 
     
-   if(this.state.todoList.length === 0) {
+     await this.setState({
+      [event.target.name]: event.target.value
+    })
+
+      let isPassword = validator.matches(this.state.password,  "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+
+    if(isPassword){
       this.setState({
-        showNoTodoMessage: true
+        passwordError: false,
+        passwordErrorMessage: ''
       })
-      
+
+    } else {
+      this.setState({
+        passwordError: true,
+        passwordErrorMessage: "Password must contain numbers, characters, capital and all that jazz"
+      })
     }
-   
   }
 
-  appHandleEditTodo =  async (targetID) => {
-    let value ;
-    let arr = [...this.state.todoList].map((item) => {
-    
-      if(targetID === item.id){
-        item.editToggle = true
-        value = item.todo
-      }
-      return item
 
+  appHandleOnClickSub = (event) => {
+    event.preventDefault()
+    
+
+    let usernameCheck = validator.isEmpty(this.state.email)
+    let passwordCheck = validator.isEmpty(this.state.password)
+
+    if(usernameCheck && passwordCheck === true){
+      this.setState({
+        submitError: true,
+        submitErrorMessage: "Username and password empty"
+      })
+      return
+    }else if(usernameCheck  === true){
+      this.setState({
+        submitError: true,
+        submitErrorMessage: "Username  empty"
+      })
+      return
+    }else if(passwordCheck === true){
+      this.setState({
+        submitError: true,
+        submitErrorMessage: "Password empty"
+      }) 
+      
+      return 
+    }else this.setState({
+        submitError: false,
+        submitErrorMessage: ""
     })
-
+  }
     
-
-    console.log(arr)
-
   
 
-
-    
-    this.setState({
-      todoList: arr,
-      disableTrigger: true,
-      editTodoValue: value
-      
-    
-    })
-    
-  }
-
-  appHandleEditOnChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
-
-    
-    console.log(this.state.editTodoValue);
-  }
-
-  appHandleEditSubmit = (targetID) => {
-
-    let arr = [...this.state.todoList].map((item) => {
-      if(targetID === item.id){
-        item.todo = this.state.editTodoValue
-        item.editToggle= false
-      }
-      return item
-    }) 
-
-   
-    this.setState({
-      todoList: arr,
-      editTodoValue: "",
-      disableTrigger: false
-      
-    })
-  }
 
   render() {
+   
+    const {isAuth, errorMessage, passwordError, passwordErrorMessage, submitError,  submitErrorMessage} = this.state
 
-    const {todoList, showNoTodoMessage, disableTrigger, editTodoValue} = this.state
+
+    let showTodoComponent = isAuth ? ( <Todo/> 
+    )  : ( 
+
+      
+
+    <form onSubmit={this.appHandleOnClickSub} >
+      {errorMessage ? <div>That is not an email</div>: null}
+      {passwordError ? <div>{passwordErrorMessage}</div>: null}
+      {submitError ? <div>{submitErrorMessage}</div>: null}
+
+      <input 
+        type="text" 
+        placeholder="Email" 
+        onChange={this.handleOnChangeEmail} 
+        value={this.state.email}
+        name='email'
+        /> <br/>
+      <input 
+      type="text" 
+      placeholder="Password" 
+      onChange={this.handleOnChangePassword} 
+      value={this.state.password}
+      name='password' 
+      /> <br/>
+      <button>Sign in</button>
+    </form> )
 
     return (
-      <div style={{textAlign: "center"}} >
-
-        {showNoTodoMessage? <div>No todos left</div> : null}
-        <input 
-          onChange={this.handleInputOnChange}
-          name="todoValue"
-          type="text" 
-          value={this.state.todoValue} />
-
-        <button onClick={this.handleSubmitOnClick}  >Submit</button>
-
-        <TodoView
-          todoList={todoList}
-          handleDeleteOnClick={this.handleDeleteOnClick}
-          appHandleEditTodo={this.appHandleEditTodo}
-          disableTrigger={disableTrigger}
-          appHandleEditOnChange={this.appHandleEditOnChange}
-          editTodoValue={editTodoValue}
-          appHandleEditSubmit={this.appHandleEditSubmit}
-
-        
-        />
-        
-        
-      </div>
+      <div style={{textAlign: "center", marginTop: "15%"}} > {showTodoComponent} </div>
     )
+      
+   
   }
 }
+
+export default App

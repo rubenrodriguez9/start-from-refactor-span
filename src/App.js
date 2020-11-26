@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Todo from "./components/Todo/Todo"
 import {v4 as uuidv4} from "uuid"
 import validator from 'validator'
+import axios from "axios"
 
 export class App extends Component {
 
@@ -13,14 +14,30 @@ export class App extends Component {
     passwordError: false,
     passwordErrorMessage: "Password must contain numbers, characters, capital and all that jazz",
     submitErrorMessage: '',
-    submitError: false
+    submitError: false,
+    emailError: false,
+    emailErrorMessage: ''
   }
 
   handleOnChangeEmail = (event) => {
-    
+   
+   let emailCheck =  validator.isEmail(this.state.email)
+    console.log(emailCheck);
+   if(!emailCheck){
+     this.setState({
+       emailError: true,
+       emailErrorMessage: 'Please use a valid email'
+     })
+   }else this.setState({
+    emailError: false,
+    emailErrorMessage: 'Please use a valid email'
+  })
+
     this.setState({
       [event.target.name]: event.target.value
     })
+
+
   }
 
 
@@ -48,9 +65,10 @@ export class App extends Component {
   }
 
 
-  appHandleOnClickSub = (event) => {
+  appHandleOnClickSub =  async (event) => {
     event.preventDefault()
     
+    console.log(this.state.email, this.state.password);
 
     let usernameCheck = validator.isEmpty(this.state.email)
     let passwordCheck = validator.isEmpty(this.state.password)
@@ -78,14 +96,31 @@ export class App extends Component {
         submitError: false,
         submitErrorMessage: ""
     })
+    
+    try{
+
+       let success = await axios.post('http://localhost:3001/api/users/create-User',{
+      
+        email:this.state.email,
+        password: this.state.password
+      })
+      console.log(success);
+
+    }
+    catch (e) {
+        console.log(e);
+    }
   }
+
+
+
     
   
 
 
   render() {
    
-    const {isAuth, errorMessage, passwordError, passwordErrorMessage, submitError,  submitErrorMessage} = this.state
+    const {isAuth, emailError, emailErrorMessage, passwordError, passwordErrorMessage, submitError,  submitErrorMessage} = this.state
 
 
     let showTodoComponent = isAuth ? ( <Todo/> 
@@ -94,7 +129,7 @@ export class App extends Component {
       
 
     <form onSubmit={this.appHandleOnClickSub} >
-      {errorMessage ? <div>That is not an email</div>: null}
+      {emailError ? <div>{emailErrorMessage}</div>: null}
       {passwordError ? <div>{passwordErrorMessage}</div>: null}
       {submitError ? <div>{submitErrorMessage}</div>: null}
 

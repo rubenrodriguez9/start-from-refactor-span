@@ -14,6 +14,32 @@ export class App extends Component {
       isAuth: true,
       user: null
     }
+
+
+    componentDidMount() {
+      let token = localStorage.getItem("jwtToken")
+
+    if(token !== null){
+      let decoded = jwtDecode(token);
+
+      let currentTime = Date.now() / 1000
+
+      if(decoded.exp < currentTime){
+          localStorage.removeItem('jwtToken')
+
+          this.props.history.push('/sign-in')
+      }else
+
+      this.setState({
+          isAuth: true,
+          user :{
+        email: decoded.email,
+        _id: decoded._id
+      }
+      })
+    }
+             
+  }
   
     auth = (jwtToken) => {
 
@@ -29,6 +55,15 @@ export class App extends Component {
       })
     }
 
+    logout = () => {
+      localStorage.removeItem('jwtToken')
+
+        this.setState({
+            isAuth: false,
+            user: null
+        })
+    }
+
 
   render() {
    
@@ -36,7 +71,7 @@ export class App extends Component {
 
     
       <Router>
-        <Nav isAuth={this.state.isAuth} user={this.state.user} />
+        <Nav isAuth={this.state.isAuth} user={this.state.user} logout={this.logout}  />
         <Switch>
           <Route  exact path="/"   component={Home} />
           <Route  exact path="/sign-up" component={Signup} />  

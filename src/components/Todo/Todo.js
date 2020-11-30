@@ -106,7 +106,6 @@ export default class Todo extends Component {
     })
 
     
-    console.log(this.state.editTodoValue);
   }
 
   appHandleEditSubmit = (targetID) => {
@@ -126,6 +125,9 @@ export default class Todo extends Component {
       disableTrigger: false
       
     })
+
+
+
   }
 
   render() {
@@ -133,6 +135,8 @@ export default class Todo extends Component {
     const {todoList, showNoTodoMessage, disableTrigger, editTodoValue} = this.state
 
     return (
+
+      
       <div style={{textAlign: "center"}} >
 
         {showNoTodoMessage? <div>No todos left</div> : null}
